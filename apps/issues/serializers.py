@@ -27,6 +27,14 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CommentListSerializer(serializers.ModelSerializer):
+    owner = UserSimpleSerializer()
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label

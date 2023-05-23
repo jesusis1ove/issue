@@ -47,5 +47,13 @@ class IssueViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Comment.objects.all()
+    serializer_class = serializers.CommentSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['issue']
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.CommentListSerializer
+        return serializers.CommentSerializer
 
 

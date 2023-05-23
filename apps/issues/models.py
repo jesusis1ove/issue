@@ -9,6 +9,7 @@ class Issue(models.Model):
     owner = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    labels = models.ManyToManyField('Label')
 
     @property
     def comment_count(self):
