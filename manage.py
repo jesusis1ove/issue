@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 
 def main():
-    load_dotenv()
+    load_dotenv('local.env')
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_issues.settings')
     try:

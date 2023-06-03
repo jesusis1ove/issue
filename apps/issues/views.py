@@ -1,3 +1,4 @@
+import rest_framework.pagination
 from django.db.models import F
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -8,13 +9,16 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from . import serializers
 from .models import Issue, Comment, Label
+from .pagination import CustomPageNumberPagination
+from .permissions import IsOwnerOrReadOnly
 
 
 class IssueViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['owner', 'is_active', 'created_at']
     search_fields = ['title']
+    pagination_class = CustomPageNumberPagination
 
     def get_serializer_class(self):
         if self.action == 'list':

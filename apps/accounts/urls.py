@@ -10,7 +10,7 @@ from .views import *
 
 urlpatterns = [
     path('', UserViewSet.as_view({'get': 'list'})),
-    # path('info/', CurrentUserInfoViewSet.as_view({'get': 'list'})),
+    path('info/', UserInfoView.as_view()),
     # path('test/', TestView.as_view())
 ]
 
