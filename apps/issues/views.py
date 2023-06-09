@@ -1,6 +1,6 @@
 import rest_framework.pagination
 from django.db.models import F
-from rest_framework import viewsets
+from rest_framework import viewsets, views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,9 +8,10 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from . import serializers
-from .models import Issue, Comment, Label
+from .models import Issue, Comment, Notification
 from .pagination import CustomPageNumberPagination
 from .permissions import IsOwnerOrReadOnly
+from .services.issues_services import *
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -42,7 +43,9 @@ class IssueViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         data = request.data
         data['owner'] = request.user.id
-        serializer = self.get_serializer(data=data)
+        attachments = request.FILES.getlist('file', None)
+
+        serializer = self.get_serializer(data=data, context={'attachments': attachments})
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -59,5 +62,16 @@ class CommentViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return serializers.CommentListSerializer
         return serializers.CommentSerializer
+
+
+class NotificationView(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.NotificationSerializer
+
+    def get_queryset(self):
+        subscribed_issues = Issue.objects.filter(subscribers=self.request.user)
+        return Notification.objects.filter(issue__in=subscribed_issues)
+
+
 
 
